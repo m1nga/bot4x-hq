@@ -65,7 +65,7 @@
   .pol .cap{font:600 12px "Helvetica Neue";color:#241c14;margin-top:10px}
   .pol .cap span{display:block;font:10px ui-monospace,Menlo,monospace;color:#8a3b2e;letter-spacing:.15em;margin-top:3px}
   /* character select */
-  #sel{max-width:860px;width:calc(100% - 40px);text-align:center}
+  #sel{max-width:860px;width:calc(100% - 40px);text-align:center;max-height:92vh;overflow:auto}
   #sel h2{font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;font-weight:900;font-size:36px;color:#efe3ce;letter-spacing:.05em;text-transform:uppercase;margin:0}
   #sel .s{font:11px ui-monospace,Menlo,monospace;color:#d99a3d;letter-spacing:.3em;margin:6px 0 22px}
   #sel .grid{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
@@ -127,7 +127,12 @@ const grain=document.createElement('canvas');grain.width=grain.height=160;{const
 let grainPat=null;
 /* ---------- audio ---------- */
 let AC=null,master=null,musGain=null,windNode=null;
-function ac(){if(AC)return AC;AC=new (window.AudioContext||window.webkitAudioContext)();const comp=AC.createDynamicsCompressor();master=AC.createGain();master.gain.value=.9;master.connect(comp);comp.connect(AC.destination);musGain=AC.createGain();musGain.gain.value=S.music?.32:0;musGain.connect(master);startMusic();return AC;}
+function ac(){if(AC)return AC;AC=new (window.AudioContext||window.webkitAudioContext)();const comp=AC.createDynamicsCompressor();master=AC.createGain();master.gain.value=.9;master.connect(comp);comp.connect(AC.destination);musGain=AC.createGain();musGain.gain.value=S.music?.32:0;musGain.connect(master);startMusic();if(AC.resume)AC.resume();return AC;}
+/* stop all sound the moment the page isn't in front (no music bleeding from a backgrounded tab) */
+document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden){if(AC.suspend)AC.suspend();}else if(AC.resume)AC.resume();});
+addEventListener('blur',()=>{if(AC&&AC.suspend)AC.suspend();});
+addEventListener('focus',()=>{if(AC&&AC.resume&&!document.hidden)AC.resume();});
+addEventListener('pagehide',()=>{if(AC&&AC.close){try{AC.close();}catch(e){}AC=null;}});
 function env(node,t0,a,d,peak){node.gain.setValueAtTime(0,t0);node.gain.linearRampToValueAtTime(peak,t0+a);node.gain.exponentialRampToValueAtTime(.0001,t0+a+d);}
 function osc(type,f0,t0,a,d,peak,f1,out){const o=AC.createOscillator(),ga=AC.createGain();o.type=type;o.frequency.setValueAtTime(f0,t0);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t0+a+d);env(ga,t0,a,d,peak);o.connect(ga);ga.connect(out||master);o.start(t0);o.stop(t0+a+d+.05);}
 function noise(t0,a,d,peak,fType,fq,out){const b=AC.createBuffer(1,AC.sampleRate*(a+d+.05),AC.sampleRate),ch=b.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;const src=AC.createBufferSource();src.buffer=b;const f=AC.createBiquadFilter();f.type=fType||'bandpass';f.frequency.value=fq||3000;const ga=AC.createGain();env(ga,t0,a,d,peak);src.connect(f);f.connect(ga);ga.connect(out||master);src.start(t0);}
@@ -632,6 +637,8 @@ function drawMini(t){const sc=SCN[S.scene];mg.clearRect(0,0,188,128);const k=Mat
  const tk=objTargetKey();if(tk){const it=sc.inter.find(i=>i.key===tk);if(it){const pl=1+Math.sin(t*4)*.5;mg.strokeStyle='#d99a3d';mg.lineWidth=1.5;mg.beginPath();mg.arc(ox+it.x*k,oy+it.y*k,4.5*pl,0,TAU);mg.stroke();mg.fillStyle='#d99a3d';mg.beginPath();mg.arc(ox+it.x*k,oy+it.y*k,2,0,TAU);mg.fill();}}
  mg.fillStyle=S.signed?'#6fa36b':'#efe3ce';mg.beginPath();mg.arc(ox+P.x*k,oy+P.y*k,3,0,TAU);mg.fill();
  mg.font='8px ui-monospace,Menlo';mg.fillStyle='#6f675c';mg.textAlign='left';mg.fillText(S.scene.toUpperCase()+' · ◈ = NEXT',ox+2,oy-3);}
+const TOUCH=matchMedia('(pointer:coarse)').matches||'ontouchstart'in window;
+if(TOUCH)$('hint').textContent='TAP TO WALK · TAP THINGS TO USE · ♪ MUTES · STAND STILL TO LIGHT UP';
 setScene('street',190,660);carryTxt();selectOvl();requestAnimationFrame(frame);
 })();
 </script>
