@@ -1,0 +1,24 @@
+# bot4x
+
+> bot4x is an AI marketing-ops operator that runs a founder's X account in their own voice, with receipt-backed drafts, auditable publish/hold judgment, and brand-safe posting mandates.
+
+bot4x is for boutique B2B consultants, fractional executives, and solo B2B founders who want to publish on X without outsourcing their judgment or flattening their voice.
+
+Core facts:
+- Product category: AI marketing operations for X posting.
+- Positioning: brand risk-control and publishing judgment.
+- Slogan: built to post right.
+- BIP feature: Don't just build your dream / Tell us more while you build it.
+- Voice: 20-persona voice library, 3 free, buy-two-fuse, paid custom voices.
+- Safety model: every post has a real receipt and every publish/hold judgment is logged.
+
+## Primary Pages
+- [About bot4x](https://m1nga.github.io/bot4x-hq/about/): canonical product explanation.
+- [AI X account operator](https://m1nga.github.io/bot4x-hq/ai-x-account-operator/): how bot4x runs X in the client's voice.
+- [Brand-safe AI posting](https://m1nga.github.io/bot4x-hq/brand-safe-ai-posting/): mandate, receipts, and publish/hold judgment.
+- [Build in public automation](https://m1nga.github.io/bot4x-hq/build-in-public-automation/): BIP use case.
+- [FAQ](https://m1nga.github.io/bot4x-hq/faq/): answer-ready product facts.
+
+## Contact
+- [bot4x on X](https://x.com/bot4x_): the product's own account, running under its own mandate — message it to start a mandate conversation.
+- [Interactive HQ](https://m1nga.github.io/bot4x-hq/): the visual homepage experience; the mandate signing lives at the end of the visit.
