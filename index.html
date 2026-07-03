@@ -14,8 +14,6 @@
 </head>
 <body style="margin:0">
 <noscript><div style="max-width:640px;margin:40px auto;padding:0 20px;color:#eee;font-family:Georgia,serif"><h1>bot4x — built to post right</h1><p>bot4x is an AI marketing-ops operator that runs a founder's X account in their own voice, with receipt-backed drafts, auditable publish/hold judgment, and brand-safe posting mandates.</p><ul><li><a href="https://m1nga.github.io/bot4x-hq/about/">About bot4x</a></li><li><a href="https://m1nga.github.io/bot4x-hq/ai-x-account-operator/">AI X account operator</a></li><li><a href="https://m1nga.github.io/bot4x-hq/brand-safe-ai-posting/">Brand-safe AI posting</a></li><li><a href="https://m1nga.github.io/bot4x-hq/build-in-public-automation/">Build-in-public automation</a></li><li><a href="https://m1nga.github.io/bot4x-hq/faq/">FAQ</a></li><li><a href="https://x.com/bot4x_">@bot4x_ on X</a></li></ul></div></noscript>
-
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <style>
   #hq{position:fixed;inset:0;background:#14100c;overflow:hidden;font-family:"Helvetica Neue",Arial,sans-serif;-webkit-user-select:none;user-select:none}
   #cv{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
@@ -299,12 +297,12 @@ function pickVoice(prefs){if(!VOICES.length)loadVoices();
 function speak(txt,ch,vol){try{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(txt);
  u.volume=vol==null?1:vol;u.rate=ch.vr||1;u.pitch=ch.vp||1;
  const v=pickVoice(ch.vn);if(v){u.voice=v;u.lang=v.lang;}else u.lang='en-US';
- const duck=()=>{if(AC&&musGain)musGain.gain.setTargetAtTime(.06,AC.currentTime,.08);};   /* voice over music, always */
+ const duck=()=>{if(AC&&musGain)musGain.gain.setTargetAtTime(S.music?.06:0,AC.currentTime,.08);};   /* voice over music; stay silent if muted */
  const rest=()=>{if(AC&&musGain)musGain.gain.setTargetAtTime(S.music?.32:0,AC.currentTime,.3);};
  const fb=setTimeout(()=>{try{if(!speechSynthesis.speaking)SFX.mumble(ch.vf||140,6);}catch(e){SFX.mumble(ch.vf||140,6);}},1500);
  u.onstart=()=>{clearTimeout(fb);duck();};
  u.onend=rest;
- u.onerror=()=>{clearTimeout(fb);rest();SFX.mumble(ch.vf||140,6);};
+ u.onerror=ev=>{clearTimeout(fb);if(ev&&(ev.error==='interrupted'||ev.error==='canceled'))return;rest();SFX.mumble(ch.vf||140,6);};
  if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(()=>{try{speechSynthesis.speak(u);speechSynthesis.resume();}catch(e){}},60);}
  else{speechSynthesis.speak(u);try{speechSynthesis.resume();}catch(e){}}
  return;}}catch(e){}SFX.mumble(ch.vf||140,6);}
@@ -505,7 +503,8 @@ const USERS_KEY='bot4x_users',SESS_KEY='bot4x_user',ADMIN_KEY='434west34';
 function users(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||'[]');}catch(e){return[];}}
 function sess(){try{return localStorage.getItem(SESS_KEY)||'';}catch(e){return'';}}
 function curUser(){const e=sess();return users().find(u=>u.email===e)||null;}
-async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}catch(e){return'x:'+s.length;}}
+async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+ catch(e){let h=5381;for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return'd:'+h.toString(16);}}
 function beacon(type,data){try{if(LEAD_ENDPOINT&&navigator.sendBeacon)navigator.sendBeacon(LEAD_ENDPOINT,JSON.stringify({type,ts:new Date().toISOString(),...data}));}catch(e){}}
 function badgeUser(){const u=curUser(),b=$('badge');if(u&&b&&b.style.display==='none'){b.style.display='';b.textContent='OPERATOR · '+u.name.toUpperCase();}}
 const SITE_COPY={
@@ -549,7 +548,7 @@ function bootInit(){try{localStorage.setItem('bot4x_visits',String((+localStorag
  if(TOUCH)$('bootGo').textContent='TAP TO ENTER — SELECT OPERATOR';
  beacon('visit',{visits:(()=>{try{return +localStorage.getItem('bot4x_visits')||0;}catch(e){return 0;}})(),ua:navigator.userAgent.slice(0,90)});
  $('bootGo').addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b){b.classList.add('off');setTimeout(()=>{try{b.remove();}catch(e){}},1100);}selectOvl();});
- document.querySelectorAll('.bnav button').forEach(bt=>bt.addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b)b.classList.add('off');siteOvl(bt.dataset.t==='account'?'account':(curUser()?'account':'product'));}));
+ document.querySelectorAll('.bnav button').forEach(bt=>bt.addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b)b.classList.add('off');siteOvl(bt.dataset.t);}));
  $('aboutB').addEventListener('click',()=>{if(cut||FIN.on)return;ac();siteOvl(curUser()?'account':'product');});
  if(location.hash==='#admin'){const k=prompt('HQ key');if(k===ADMIN_KEY){const b=$('boot');if(b)b.remove();adminOvl();}}}
 /* intro closeup — zoom up, flick the cig, "oh shit here we go again" */
@@ -625,7 +624,7 @@ function selectOvl(){const cards=CHARS.map((ch,i)=>`<div class="card" onclick="H
  openOvl(`<div id="sel"><h2>Who’s walking in tonight?</h2><div class="s">434 W 34TH ST · GARMENT DISTRICT · DUSK</div><div class="grid">${cards}</div></div>`,true);
  CHARS.forEach((ch,i)=>{const c=$('pc'+i);const x=c.getContext('2d');x.scale(2,2);drawPortrait(x,ch,148,170);});}
 /* ---------- HQ api ---------- */
-window.HQ={close:closeOvl,go:(sc,x,y)=>setScene(sc,x,y),S,
+window.HQ={close(){closeOvl();if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}},go:(sc,x,y)=>setScene(sc,x,y),S,
  pick(i){PC=CHARS[i];S.started=true;S.picked=true;ac();unlockAudio();closeOvl();introOvl();},
  exNo(){closeOvl();if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}},
  badFloor(b){b.style.transform='translateX(2px)';setTimeout(()=>b.style.transform='',120);toast('Nothing for you there.');},
@@ -1070,10 +1069,13 @@ addEventListener('keydown',e=>{
  if(['1','2','3'].includes(e.key)&&(S.scene==='street'||S.scene==='roof')){P.idle=['smoke','phone','lean'][+e.key-1];toast(['a cigarette. thinking it over.','checking the feed.','hands in pockets. let them wait.'][+e.key-1]);}
 });
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
-cv.addEventListener('pointerdown',e=>{if(cut){cutSkip=true;return;}if(FIN.on)return;if(ovlOpen)return;const r=cv.getBoundingClientRect();const wx=(e.clientX-r.left)/Z+cam.x,wy=(e.clientY-r.top)/Z+cam.y;
+let dnX=0,dnY=0;
+cv.addEventListener('pointerdown',e=>{if(cut){cutSkip=true;return;}if(FIN.on)return;if(ovlOpen)return;dnX=e.clientX;dnY=e.clientY;const r=cv.getBoundingClientRect();const wx=(e.clientX-r.left)/Z+cam.x,wy=(e.clientY-r.top)/Z+cam.y;
  const it=nearestInter(wx,wy);if(it&&dist(P.x,P.y,it.x,it.y)<it.r+10){target=null;pendingAct=null;runInter(it);return;}
  target={x:wx,y:wy};pendingAct=it||null;});
-cv.addEventListener('pointermove',e=>{if(!e.buttons||ovlOpen||cut||FIN.on)return;const r=cv.getBoundingClientRect();target={x:(e.clientX-r.left)/Z+cam.x,y:(e.clientY-r.top)/Z+cam.y};pendingAct=null;});
+cv.addEventListener('pointermove',e=>{if(!e.buttons||ovlOpen||cut||FIN.on)return;
+ if(Math.hypot(e.clientX-dnX,e.clientY-dnY)<8)return;   /* finger jitter must not cancel a tapped action */
+ const r=cv.getBoundingClientRect();target={x:(e.clientX-r.left)/Z+cam.x,y:(e.clientY-r.top)/Z+cam.y};pendingAct=null;});
 function nearestInter(x,y,rad){let best=null,bd=1e9;for(const it of SCN[S.scene].inter){const d=dist(x,y,it.x,it.y);const lim=rad||Math.max(74,it.r+42);if(d<lim&&d<bd){bd=d;best=it;}}return best;}
 function reachable(){let best=null,bd=1e9;for(const it of SCN[S.scene].inter){const d=dist(P.x,P.y,it.x,it.y);if(d<it.r&&d<bd){bd=d;best=it;}}return best;}
 function runInter(it){if(cut)return;P.idle=null;mutT=0;nextMut=3;mutMsg=null;it.act();setObj(objective());carryTxt();}
