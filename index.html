@@ -40,7 +40,7 @@
   button.hbtn:focus-visible,#ovl button:focus-visible,#ovl input:focus-visible,#ovl textarea:focus-visible{outline:2px solid #d99a3d;outline-offset:1px}
   #ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,8,6,.78);pointer-events:auto;z-index:20;overflow:auto}
   #ovl.open{display:flex}
-  #hq.fin .hud{opacity:0;transition:opacity 2s}
+  #hq.fin .hud:not(#toasts){opacity:0;transition:opacity 2s}
   /* boot — GTA-grammar: black · presents · badge pop · loading card */
   #boot{position:absolute;inset:0;background:#000;z-index:30;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity 1s ease;overflow:hidden}
   #boot.off{opacity:0;pointer-events:none}
@@ -355,7 +355,7 @@ function vo(key,ch,fallbackTxt,vol){const id=ch.id+'_'+key,src='voices/'+id+'.mp
  const rest=()=>{if(AC&&musGain)musGain.gain.setTargetAtTime(S.music?.32:0,AC.currentTime,.3);};
  a.volume=vol==null?1:vol;try{a.currentTime=0;}catch(e){}
  const pr=a.play();
- if(pr&&pr.then)pr.then(()=>{duck();a.onended=rest;a.onpause=rest;}).catch(()=>{VO_CACHE[id]=false;speak(fallbackTxt,ch,vol);});
+ if(pr&&pr.then)pr.then(()=>{duck();a.onended=rest;a.onpause=rest;}).catch(err=>{if(!(err&&err.name==='NotAllowedError'))VO_CACHE[id]=false;speak(fallbackTxt,ch,vol);});
  else{duck();a.onended=rest;}}
 /* iOS: speech must be primed inside a user gesture once */
 let voicePrimed=false;
@@ -432,7 +432,7 @@ function locCard(sub,t){$('locS').textContent=sub;$('locT').textContent=t;const 
 const ovl=$('ovl');let ovlOpen=false;
 function openOvl(html,keep){ovl.innerHTML=html;ovl.classList.add('open');ovlOpen=true;ovl._keep=!!keep;}
 function closeOvl(){ovl.classList.remove('open');ovl.innerHTML='';ovlOpen=false;}
-ovl.addEventListener('click',e=>{if(e.target===ovl&&!ovl._keep){closeOvl();if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}}});
+ovl.addEventListener('click',e=>{if(e.target===ovl&&!ovl._keep){closeOvl();if(FIN.phase==='end'){endOvl();return;}if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}}});
 function paper(inner){return '<div class="paper">'+inner+'</div>';}
 function flyerOvl(){openOvl(`<div class="cine">
  <div class="dim" style="animation-delay:0s">FOUND IN THE GUTTER</div>
@@ -604,7 +604,7 @@ function siteOvl(tab){tab=tab||'product';const u=curUser();
 function adminOvl(){let ms=[];try{ms=JSON.parse(localStorage.getItem('bot4x_mandates')||'[]');}catch(e){}
  const us=users(),vs=+((()=>{try{return localStorage.getItem('bot4x_visits');}catch(e){return 0;}})()||0);
  const rows=(a,cols)=>a.map(r=>`<tr>${cols.map(c=>`<td>${esc(String(r[c]??''))}</td>`).join('')}</tr>`).join('')||`<tr><td colspan="${9}">—</td></tr>`;
- openOvl(`<div class="site"><h3>HQ BACK OFFICE</h3>
+ openOvl(`<div class="site"><div><h3>HQ BACK OFFICE</h3></div>
  <p style="font:10px ui-monospace,Menlo,monospace;color:#6f675c">This shows data on THIS device. Wire LEAD_ENDPOINT to a webhook to collect every visitor globally.</p>
  <div class="sl">VISITS (this device): ${vs}</div>
  <div class="sl">REGISTRATIONS (${us.length})</div><table><tr><th>name</th><th>email</th><th>ts</th></tr>${rows(us,['name','email','ts'])}</table>
@@ -736,7 +736,7 @@ function selectOvl(){const cards=CHARS.map((ch,i)=>`<div class="card" onclick="H
  openOvl(`<div id="sel"><h2>Who’s walking in tonight?</h2><div class="s">434 W 34TH ST · HUDSON YARDS EDGE · DUSK</div><div class="grid">${cards}</div></div>`,true);
  CHARS.forEach((ch,i)=>{const c=$('pc'+i);const x=c.getContext('2d');x.scale(2,2);drawPortrait(x,ch,148,170);});}
 /* ---------- HQ api ---------- */
-window.HQ={close(){closeOvl();if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}},go:(sc,x,y)=>setScene(sc,x,y),S,
+window.HQ={close(){closeOvl();if(FIN.phase==='end'){endOvl();return;}if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}},go:(sc,x,y)=>setScene(sc,x,y),S,
  pick(i){PC=CHARS[i];S.started=true;S.picked=true;ac();unlockAudio();closeOvl();introOvl();},
  exNo(){closeOvl();if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}},
  badFloor(b){b.style.transform='translateX(2px)';setTimeout(()=>b.style.transform='',120);toast('Nothing for you there.');},
@@ -788,7 +788,7 @@ function puff(x,y,col){parts.push({x,y,vx:(Math.random()-.5)*6,vy:-14-Math.rando
 function drawParts(dt){parts=parts.filter(p=>(p.life-=dt*.45)>0);for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.r+=dt*6;g.globalAlpha=p.life*.8;g.fillStyle=p.col;g.beginPath();g.arc(p.x,p.y,p.r,0,TAU);g.fill();}g.globalAlpha=1;}
 /* ---------- kickables — GTA physics-lite: walk into it, it flies ---------- */
 const kicks=[
- {sc:'street',type:'pigeon',x:420,y:664},{sc:'street',type:'can',x:1160,y:706},{sc:'street',type:'paper',x:560,y:648},
+ {sc:'street',type:'pigeon',x:420,y:664},{sc:'street',type:'can',x:1230,y:758},{sc:'street',type:'paper',x:560,y:648},
  {sc:'floor',type:'paper',x:1300,y:600},{sc:'floor',type:'can',x:560,y:770},
  {sc:'roof',type:'pigeon',x:500,y:420},{sc:'roof',type:'can',x:880,y:560},
 ].map(k=>({...k,ox:k.x,oy:k.y,vx:0,vy:0,rot:0,vr:0,st:0,t:0}));
@@ -847,7 +847,7 @@ SCN.street={w:1500,h:860,title:['HUDSON YARDS EDGE','W 34th St'],
  cols:[{x:0,y:0,w:1500,h:576}],   /* street: only the building blocks you — everything else walkable */
  inter:[
   {key:'buzzer',x:800,y:600,r:74,label:'Press the bot4x buzzer',act(){ac();SFX.buzz();toast('— door unlocked');setTimeout(()=>setScene('lobby',450,540),500);}},
-  {key:'flyer',x:1010,y:742,r:56,label:'A soggy flyer',act:flyerOvl},
+  {key:'flyer',x:900,y:766,r:56,label:'A soggy flyer',act:flyerOvl},
  ],
  draw(dt,t){const sc=this;
   const sky=g.createLinearGradient(0,0,0,90);sky.addColorStop(0,'#2c1e2a');sky.addColorStop(1,'#4a2a22');g.fillStyle=sky;g.fillRect(0,0,sc.w,90);
@@ -918,7 +918,7 @@ SCN.street={w:1500,h:860,title:['HUDSON YARDS EDGE','W 34th St'],
   g.fillStyle='#3c474d';g.fillRect(1190,650,40,42);g.fillStyle='#2c3237';g.fillRect(1186,646,48,8);
   g.fillStyle='#523620';g.fillRect(96,636,64,10);g.fillRect(100,646,8,10);g.fillRect(148,646,8,10);
   /* pigeon is a kickable now (drawKicks) */
-  g.save();g.translate(1010,742);g.rotate(.4);g.fillStyle='rgba(239,227,206,.75)';g.fillRect(-10,-13,22,26);g.fillStyle='#8a3b2e';g.fillRect(-7,-9,16,3);g.restore();
+  g.save();g.translate(900,766);g.rotate(.4);g.fillStyle='rgba(239,227,206,.75)';g.fillRect(-10,-13,22,26);g.fillStyle='#8a3b2e';g.fillRect(-7,-9,16,3);g.restore();
   g.fillStyle='#241f1a';g.beginPath();g.ellipse(520,752,26,9,0,0,TAU);g.fill();if(Math.random()<.3)puff(520,744,'rgba(200,195,185,.16)');
   sc.cab=(sc.cab??-200)+dt*(RM?80:190);if(sc.cab>1800)sc.cab=-300;const cx=sc.cab;
   g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(cx+70,830,76,12,0,0,TAU);g.fill();
@@ -1101,12 +1101,12 @@ function gateCut(){if(cut)return;cut=true;cutSkip=false;target=null;const sc=SCN
   [8.1,()=>{board.flipTo('PUBLISH');SFX.ding();toast('Bold on take. Strict on claim.',true);}],
   [8.9,()=>{S.gateDone=true;S.stations.engine=1;S.carrying=null;carryTxt();camLock=null;cut=false;calcZoom();setObj(objective());}]];
  const t0=performance.now();let done=0;
- (function run(){if(cutSkip){for(let i=done;i<steps.length;i++)steps[i][1]();done=steps.length;return;}
+ (function run(){if(cutSkip){cutSkip=false;for(let i=done;i<steps.length;i++)steps[i][1]();done=steps.length;return;}
   const el=(performance.now()-t0)/1000*(RM?2.2:1);while(done<steps.length&&steps[done][0]<=el){steps[done][1]();done++;}
   if(done<steps.length)requestAnimationFrame(run);})();}
 /* ---------- stairwell climb — the way up to the roof ---------- */
 const STX={on:false,t:0};
-function stairFX(){cut=true;STX.on=true;STX.t=0;}
+function stairFX(){cut=true;cutSkip=false;STX.on=true;STX.t=0;}
 function renderStairs(){
  g.fillStyle='#0d0a08';g.fillRect(0,0,W,H);
  const p=Math.min(1,STX.t/2.6),off=p*H*1.05;
@@ -1260,7 +1260,7 @@ function setScene(id,x,y){S.scene=id;calcZoom();P.x=x;P.y=y;P.idleT=0;target=nul
 /* ---------- input ---------- */
 addEventListener('keydown',e=>{
  if($('boot')&&!ovlOpen&&(e.key==='Enter'||e.key===' ')){$('bootGo').click();return;}
- if(ovlOpen){if(e.key==='Escape'&&!ovl._keep){closeOvl();if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}}if(ovl._keep&&!S.started&&['1','2','3','4'].includes(e.key))HQ.pick(+e.key-1);return;}
+ if(ovlOpen){if(e.key==='Escape'&&!ovl._keep){closeOvl();if(FIN.phase==='end'){endOvl();return;}if(!S.picked){const b=$('boot');if(b)b.classList.remove('off');else selectOvl();}}if(ovl._keep&&!S.started&&['1','2','3','4'].includes(e.key))HQ.pick(+e.key-1);return;}
  if(cut){if(e.key==='Enter'||e.key.toLowerCase()==='e')cutSkip=true;return;}
  keys[e.key.toLowerCase()]=true;
  if(e.key==='e'||e.key==='E'||e.key==='Enter'){tryInteract();}
