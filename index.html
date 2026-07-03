@@ -9,7 +9,7 @@
 <meta property="og:description" content="Enter. Pick your operator. Walk the judgment floor. Sign your mandate.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#000000">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2314100c'/%3E%3Ctext x='32' y='46' font-family='Arial Narrow,Arial' font-size='42' font-weight='900' fill='%23d99a3d' text-anchor='middle'%3E4%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%2314100c'/%3E%3Cg fill='%23efe3ce' fill-rule='evenodd'%3E%3Cpath d='M44.77,15.82 L63.6,32.69 L71,23.91 L51.23,8.18ZM49.57,15.42 L63.19,27.89 L66.21,24.32 L51.63,12.97Z'/%3E%3Cpath d='M76.66,44.48 L95.48,61.35 L104.52,50.65 L84.74,34.92ZM81.45,44.08 L95.08,56.56 L99.73,51.06 L85.14,39.71Z'/%3E%3Cpath d='M104.82,2.15 L10.9,75.83 L21.1,88.17 L111.18,9.85ZM104.36,6.93 L15.69,76.29 L21.55,83.38 L106.4,9.4Z'/%3E%3Cpath d='M68.8,43.91 L63.5,115.83 L79.5,116.17 L77.2,44.09ZM72.13,47.38 L66.97,112.5 L76.17,112.7 L73.73,47.42Z'/%3E%3Cpath d='M16,88 L100,85.5 L100,74.5 L16,72ZM19.4,84.6 L96.6,82.1 L96.6,77.9 L19.4,75.4Z'/%3E%3C/g%3E%3C/svg%3E">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "name": "bot4x", "url": "https://m1nga.github.io/bot4x-hq/", "sameAs": ["https://x.com/bot4x_"], "description": "bot4x is an AI marketing-ops operator that runs a founder's X account in their own voice, with receipt-backed drafts, auditable publish/hold judgment, and brand-safe posting mandates.", "slogan": "built to post right"}, {"@type": "WebSite", "name": "bot4x HQ", "url": "https://m1nga.github.io/bot4x-hq/"}, {"@type": "SoftwareApplication", "name": "bot4x", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "url": "https://m1nga.github.io/bot4x-hq/", "description": "bot4x is an AI marketing-ops operator that runs a founder's X account in their own voice, with receipt-backed drafts, auditable publish/hold judgment, and brand-safe posting mandates."}]}</script>
 </head>
 <body style="margin:0">
@@ -27,7 +27,7 @@
   #hint{left:max(16px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));font:10px ui-monospace,Menlo,monospace;color:#6f675c;letter-spacing:.06em;max-width:calc(100vw - 170px)}
   #prompt{left:50%;bottom:96px;transform:translateX(-50%);font:600 14px "Helvetica Neue",Arial;background:rgba(20,16,12,.9);border:1px solid #d99a3d;color:#efe3ce;padding:10px 18px;border-radius:3px;display:none;letter-spacing:.03em}
   #prompt b{color:#d99a3d;font-family:ui-monospace,Menlo,monospace}
-  #toasts{left:50%;bottom:152px;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;pointer-events:none;z-index:21}
+  #toasts{left:50%;top:64px;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;pointer-events:none;z-index:21}
   .toast{font:12px ui-monospace,Menlo,monospace;background:rgba(20,16,12,.92);border-left:2px solid #d99a3d;color:#e6d9c2;padding:7px 12px;max-width:520px;animation:tin .3s ease}
   .toast.green{border-left-color:#6fa36b;color:#cfe3cd}
   @keyframes tin{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
@@ -347,6 +347,10 @@ function speak(txt,ch,vol){try{if(window.speechSynthesis){const u=new SpeechSynt
  return;}}catch(e){}SFX.mumble(ch.vf||140,6);}
 /* ---------- VO clips (ElevenLabs) with TTS fallback ---------- */
 const VO_CACHE={};
+function voPreload(ch){['intro','roof','mut1','mut2'].forEach(k=>{const id=ch.id+'_'+k;
+ if(VO_CACHE[id]!=null)return;
+ const a=new Audio('voices/'+id+'.mp3');a.preload='auto';VO_CACHE[id]=a;
+ a.addEventListener('error',()=>{VO_CACHE[id]=false;});});}
 function vo(key,ch,fallbackTxt,vol){const id=ch.id+'_'+key,src='voices/'+id+'.mp3';
  let a=VO_CACHE[id];
  if(a===false){speak(fallbackTxt,ch,vol);return;}
@@ -514,18 +518,19 @@ function polaroidOvl(){SFX.shutter();openOvl(`<div class="pol"><canvas id="polc"
  p2.fillStyle=PC.suit;p2.beginPath();p2.ellipse(112,102,16,20,0,0,7);p2.fill();p2.fillStyle=PC.skin;p2.beginPath();p2.arc(112,76,9,0,7);p2.fill();if(PC.shades){p2.fillStyle='#111';p2.fillRect(104,72,16,5);}p2.fillStyle=PC.shirt;p2.fillRect(108,88,8,12);
  p2.save();p2.translate(206,166);p2.rotate(-.12);p2.strokeStyle='#6fa36b';p2.lineWidth=3;p2.strokeRect(-52,-16,104,32);p2.fillStyle='#6fa36b';p2.font='900 15px "Arial Narrow",Arial';p2.textAlign='center';p2.fillText('CLIENT',0,5);p2.restore();}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-/* ---------- the bot4x mark — outlined crossed-4, drawn in a 100x100 box ---------- */
-function barPath(ctx,x1,y1,x2,y2,w1,w2){w2=w2==null?w1:w2;const a=Math.atan2(y2-y1,x2-x1),px=Math.sin(a),py=-Math.cos(a);
- ctx.moveTo(x1+px*w1/2,y1+py*w1/2);ctx.lineTo(x2+px*w2/2,y2+py*w2/2);ctx.lineTo(x2-px*w2/2,y2-py*w2/2);ctx.lineTo(x1-px*w1/2,y1-py*w1/2);ctx.closePath();}
-function drawMark(ctx,x,y,s,color,lw){ctx.save();ctx.translate(x,y);ctx.scale(s/100,s/100);
- ctx.strokeStyle=color||'#efe3ce';ctx.lineWidth=Math.min(9,(lw||3)*100/(s||100));ctx.lineJoin='miter';ctx.miterLimit=8;
- ctx.beginPath();
- barPath(ctx,15,74,87,22,15);         /* main diagonal beam */
- barPath(ctx,30,34,50,19,12);         /* short parallel stub, upper-left */
- barPath(ctx,62,24,57,88,15,9);       /* stem — slight lean, tapered foot */
- barPath(ctx,24,65,78,58,11);         /* crossbar */
- ctx.moveTo(13,80);ctx.lineTo(28,67);ctx.lineTo(28,81);ctx.closePath();  /* wedge tip, lower-left */
- ctx.stroke();ctx.restore();}
+/* ---------- the bot4x mark — REAL geometry from the logo handoff (viewBox 120) ---------- */
+let MARK_P=null;
+function drawMark(ctx,x,y,s,color){
+ if(!MARK_P)MARK_P=[
+  'M44.77,15.82L63.6,32.69L71,23.91L51.23,8.18ZM49.57,15.42L63.19,27.89L66.21,24.32L51.63,12.97Z',
+  'M76.66,44.48L95.48,61.35L104.52,50.65L84.74,34.92ZM81.45,44.08L95.08,56.56L99.73,51.06L85.14,39.71Z',
+  'M104.82,2.15L10.9,75.83L21.1,88.17L111.18,9.85ZM104.36,6.93L15.69,76.29L21.55,83.38L106.4,9.4Z',
+  'M68.8,43.91L63.5,115.83L79.5,116.17L77.2,44.09ZM72.13,47.38L66.97,112.5L76.17,112.7L73.73,47.42Z',
+  'M16,88L100,85.5L100,74.5L16,72ZM19.4,84.6L96.6,82.1L96.6,77.9L19.4,75.4Z',
+ ].map(d=>new Path2D(d));
+ ctx.save();ctx.translate(x,y);ctx.scale(s/120,s/120);ctx.fillStyle=color||'#efe3ce';
+ for(const p of MARK_P)ctx.fill(p,'evenodd');
+ ctx.restore();}
 /* ---------- character portraits + select ---------- */
 function drawPortrait(ctx,ch,w,h){ctx.clearRect(0,0,w,h);ctx.fillStyle='#171310';ctx.fillRect(0,0,w,h);
  ctx.strokeStyle='#3a332b';ctx.strokeRect(6,6,w-12,h-12);
@@ -617,7 +622,7 @@ function bootInit(){try{localStorage.setItem('bot4x_visits',String((+localStorag
  badgeUser();
  if(TOUCH)$('bootGo').textContent='TAP TO ENTER — SELECT OPERATOR';
  beacon('visit',{visits:(()=>{try{return +localStorage.getItem('bot4x_visits')||0;}catch(e){return 0;}})(),ua:navigator.userAgent.slice(0,90)});
- $('bootGo').addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b){b.classList.add('off');setTimeout(()=>{try{b.remove();}catch(e){}},1100);}selectOvl();});
+ $('bootGo').addEventListener('click',()=>{ac();primeVoice();CHARS.forEach(voPreload);const b=$('boot');if(b){b.classList.add('off');setTimeout(()=>{try{b.remove();}catch(e){}},1100);}selectOvl();});
  document.querySelectorAll('.bnav button').forEach(bt=>bt.addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b)b.classList.add('off');siteOvl(bt.dataset.t);}));
  $('aboutB').addEventListener('click',()=>{if(cut||FIN.on)return;ac();siteOvl(curUser()?'account':'product');});
  if(location.hash==='#admin'){const k=prompt('HQ key');if(k===ADMIN_KEY){const b=$('boot');if(b)b.remove();adminOvl();return;}}
@@ -648,13 +653,16 @@ function drawArtRoof(x,w,h){const sk=x.createLinearGradient(0,0,0,h);sk.addColor
  x.fillStyle='#171019';for(let i=0;i<4;i++){const bh=h*.2+(i*47)%60;x.fillRect(i*w/4,h*.72-bh,w/4-6,bh);}
  x.fillStyle='#241c14';x.fillRect(0,h*.72,w,h*.28);
  x.fillStyle='#d99a3d';x.font='900 18px "Arial Narrow",Arial';x.textAlign='center';x.fillText('BUILT TO POST RIGHT.',w*.5,h*.88);}
-/* feature stations — slow one-line reveals; the floor is open, any order */
+/* feature stations — slow one-line reveals; every line sized to the SAME width (GTA lockup) */
+function eqLine(txt,cls,delay){const n=Math.max(6,txt.length);
+ const px=Math.min(88,Math.round(640/(n*0.60)));
+ return `<div class="big ${cls}" style="animation-delay:${delay}s;font-size:min(${px}px,${(92/(n*0.60)).toFixed(2)}vw);line-height:1.06">${txt}</div>`;}
 function stationOvl(key,kicker,l1,l2,l3){S.stations[key]=1;setObj(objective());
  openOvl(`<div class="cine">
  <div class="dim" style="animation-delay:0s">${kicker}</div>
- <div class="big" style="animation-delay:.8s">${l1}</div>
- ${l2?`<div class="big brass" style="animation-delay:1.9s">${l2}</div>`:''}
- ${l3?`<div class="mid slog" style="animation-delay:3.0s">${l3}</div>`:''}
+ ${eqLine(l1,'',.8)}
+ ${l2?eqLine(l2,'brass',1.9):''}
+ ${l3?eqLine(l3,'brass',3.0):''}
  <button type="button" style="animation-delay:3.8s" onclick="HQ.close()">Keep walking</button></div>`);}
 function engineIntro(){openOvl(`<div class="cine">
  <div class="dim" style="animation-delay:0s">THE ENGINE — HOW ANYTHING SHIPS</div>
@@ -742,7 +750,7 @@ window.HQ={close(){closeOvl();if(FIN.phase==='end'){endOvl();return;}if(!S.picke
  badFloor(b){b.style.transform='translateX(2px)';setTimeout(()=>b.style.transform='',120);toast('Nothing for you there.');},
  catRoute(){S.metCat=true;closeOvl();SFX.purr();toast('“Elevator. Press 4. Touch nothing else.” — the cat');setObj(objective());},
  ride(){ac();const d=$('edial');let i=0;const seq=['L','2','3','4'];const iv=setInterval(()=>{d.innerHTML=seq.map((s,j)=>j===i?'<b style="color:#d99a3d">'+s+'</b>':s).join('&nbsp;&nbsp;');if(AC)noise(AC.currentTime,.01,.09,.03,'lowpass',240);i++;if(i>=4){clearInterval(iv);SFX.ding();setTimeout(()=>{closeOvl();setScene('floor',950,1080);},420);}},RM?80:420);},
- checkin(){const n=$('ci_n').value.trim(),h=$('ci_h').value.trim();if(!n){$('ci_n').focus();return;}S.name=n;S.handle=h||'@'+n.toLowerCase().replace(/\s+/g,'');S.checkedIn=true;ac();SFX.print();closeOvl();const b=$('badge');b.style.display='';b.textContent='GUEST · '+S.handle;toast('Badge printed. Welcome in, '+n+'.');},
+ checkin(){const n=$('ci_n').value.trim(),h=$('ci_h').value.trim();if(!n){$('ci_n').focus();return;}S.name=n;S.handle=h||'@'+n.toLowerCase().replace(/\s+/g,'');S.checkedIn=true;ac();SFX.print();closeOvl();const b=$('badge');b.style.display='';b.textContent='GUEST · '+S.handle;toast('Badge printed. Welcome in'+(n.length>1?', '+n:'')+'.');},
  sign(express){const idv=$('m_id').value.trim(),em=$('m_em').value.trim(),sc=$('sig');
   if(!S.checkedIn){const n=$('m_n'),h=$('m_h');if(!n.value.trim()){n.focus();return;}S.name=n.value.trim();S.handle=h.value.trim()||'@'+S.name.toLowerCase().replace(/\s+/g,'');S.checkedIn=true;const b=$('badge');b.style.display='';}
   if(!idv){$('m_id').focus();return;}if(!em||!em.includes('@')){$('m_em').focus();return;}if(!sc._strokes){toast('Sign it. With the pen.');return;}
@@ -1144,8 +1152,8 @@ function roofCloseOvl(){openOvl(`<div class="closeup" id="rc" style="cursor:poin
  <canvas id="rcC" width="640" height="760"></canvas>
  <div class="sub" id="rcLine" style="opacity:0;font-size:14px;letter-spacing:.28em;color:#efe3ce;margin-top:14px"></div></div>`,true);
  const t0=performance.now();let done=false,spoke=false,flicked=false;
- const say=()=>{if(spoke)return;spoke=true;vo('roof',PC,"I know this one's different.");
-  const el=$('rcLine');if(el){el.textContent=PC.id==='suit'?'“我晓得额——这趟勿一样。”':'“I KNOW THIS ONE’S DIFFERENT.”';el.style.animation='stamp .4s forwards';}};
+ const say=()=>{if(spoke)return;spoke=true;vo('roof',PC,"I don't even know why the fuck I trust this shit.");
+  const el=$('rcLine');if(el){el.textContent=PC.id==='suit'?'“册那……我都勿晓得为啥相信迭个物事。”':'“I DON’T EVEN KNOW WHY THE FUCK I TRUST THIS SHIT.”';el.style.animation='stamp .4s forwards';}};
  const skipH=()=>{if(performance.now()-t0<450)return;say();setTimeout(jumpNow,400);};
  function jumpNow(){if(done)return;done=true;ovl.removeEventListener('pointerdown',skipH);closeOvl();FIN.on=true;FIN.phase='fall';FIN.t=0;setObj('');if(AC)SFX.whoosh();}
  const c=$('rcC');if(!c)return jumpNow();
