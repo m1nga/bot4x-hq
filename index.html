@@ -38,7 +38,7 @@
   button.hbtn{font:11px ui-monospace,Menlo,monospace;letter-spacing:.1em;padding:5px 10px;border:1px solid #3a332b;background:rgba(16,13,10,.85);color:#d99a3d;border-radius:2px;cursor:pointer}
   button.hbtn:hover{border-color:#d99a3d}
   button.hbtn:focus-visible,#ovl button:focus-visible,#ovl input:focus-visible,#ovl textarea:focus-visible{outline:2px solid #d99a3d;outline-offset:1px}
-  #ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,8,6,.78);pointer-events:auto;z-index:20;overflow:auto}
+  #ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,8,6,.78);pointer-events:auto;z-index:40;overflow:auto}
   #ovl.open{display:flex}
   #hq.fin .hud:not(#toasts){opacity:0;transition:opacity 2s}
   /* boot — GTA-grammar: black · presents · badge pop · loading card */
@@ -55,7 +55,7 @@
   .bart{position:absolute;inset:0;display:flex;gap:10px;justify-content:center;opacity:.55;animation:bpan 24s linear infinite alternate}
   @keyframes bpan{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
   .bart canvas{height:100%;width:34vw;min-width:220px;outline:1px solid rgba(239,227,206,.14)}
-  .bveil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 40%,rgba(20,16,12,.88) 100%)}
+  .bveil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 40%,rgba(20,16,12,.88) 100%);pointer-events:none}
   .bwrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px}
   .bmark{font-family:"Pricedown Bl","Arial Narrow","Helvetica Neue",Arial,sans-serif;font-weight:900;font-size:clamp(64px,16vw,130px);line-height:1;color:#efe3ce;letter-spacing:.01em;text-shadow:3px 3px 0 rgba(0,0,0,.85)}
   .bslog{font:11px ui-monospace,Menlo,monospace;color:#d99a3d;letter-spacing:.42em;margin-top:2px}
@@ -78,6 +78,7 @@
   .site .tabs{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
   .site .tabs button{font:11px ui-monospace,Menlo,monospace;letter-spacing:.1em;padding:8px 12px;border:1px solid #2a251f;background:transparent;color:#8f867a;cursor:pointer;border-radius:0;min-height:38px}
   .site .tabs button.on{color:#efe3ce;border-bottom:3px solid #d99a3d;background:#1a1613}
+  .site .tabs .xcl{margin-left:auto;min-width:44px;color:#b7a98c;font-size:14px}
   .site h3{display:inline-block;background:#8a3b2e;color:#efe3ce;padding:7px 20px 6px 16px;transform:skewX(-8deg);border-left:6px solid #d99a3d;font-family:"Pricedown Bl","Arial Narrow",Arial,sans-serif;font-weight:900;font-size:26px;letter-spacing:.02em;margin:0;box-shadow:3px 3px 0 #000}
   .site p{font-size:13.5px;line-height:1.7;color:#c9bda6;margin:8px 0}
   .site .hero{font-family:"Arial Narrow",Arial;font-weight:900;font-size:clamp(22px,4vw,32px);line-height:1.25;color:#efe3ce;letter-spacing:.04em;text-transform:uppercase}
@@ -192,6 +193,7 @@
   #mini{transition:opacity .2s}
   #mini.hide,#miniX.hide{opacity:0;pointer-events:none!important}
   #miniX{display:none;position:absolute;width:44px;height:44px;pointer-events:auto;background:rgba(16,13,10,.55);border:1px solid #6f675c;border-radius:2px;color:#b7a98c;font:16px ui-monospace,Menlo,monospace;padding:0;cursor:pointer}
+  @media (pointer:fine){#mini{pointer-events:auto;cursor:pointer}}
   #skipH{left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);font:11px ui-monospace,Menlo,monospace;color:#8f867a;letter-spacing:.3em;display:none}
   #hint{transition:opacity .6s}
   #hint.fade{opacity:0}
@@ -288,6 +290,7 @@
         <div class="bnav">
           <button class="bghost" data-t="product" type="button">ABOUT</button>
           <button class="bghost" data-t="account" type="button">REGISTER</button>
+          <button class="bghost" data-t="mandate" type="button">MANDATE</button>
           <button class="bghost" data-t="account" type="button">LOG IN</button>
         </div>
         <div class="bfoot">FOUNDED IN SHANGHAI · OPERATING OUT OF NEW YORK<br>434 W 34TH ST · 4F · EST. 2026</div>
@@ -707,7 +710,7 @@ function siteOvl(tab){tab=tab||'product';const u=curUser();
   <div class="btns"><button type="button" onclick="HQ.register()">Register</button><button class="g" type="button" onclick="HQ.login()">Sign in</button></div>`;
  const tabs=[['product','PRODUCT'],['company','COMPANY'],['account',u?'ACCOUNT':'SIGN IN']];
  const cont=tab==='account'?acct:SITE_COPY[tab];
- openOvl(`<div class="site"><div class="tabs">${tabs.map(([k,l])=>`<button type="button" class="${k===tab?'on':''}" onclick="HQ.site('${k}')">${l}</button>`).join('')}</div>
+ openOvl(`<div class="site"><div class="tabs">${tabs.map(([k,l])=>`<button type="button" class="${k===tab?'on':''}" onclick="HQ.site('${k}')">${l}</button>`).join('')}<button type="button" class="xcl" aria-label="Close" onclick="HQ.close()">✕</button></div>
  ${cont}<div class="sl">BUILT TO POST RIGHT.</div></div>`);}
 function adminOvl(){let ms=[];try{ms=JSON.parse(localStorage.getItem('bot4x_mandates')||'[]');}catch(e){}
  const us=users(),vs=+((()=>{try{return localStorage.getItem('bot4x_visits');}catch(e){return 0;}})()||0);
@@ -726,7 +729,7 @@ function bootInit(){try{localStorage.setItem('bot4x_visits',String((+localStorag
  if(TOUCH)$('bootGo').textContent='TAP TO ENTER — CHOOSE CHARACTER';
  beacon('visit',{visits:(()=>{try{return +localStorage.getItem('bot4x_visits')||0;}catch(e){return 0;}})(),ua:navigator.userAgent.slice(0,90)});
  $('bootGo').addEventListener('click',()=>{ac();primeVoice();CHARS.forEach(voPreload);const b=$('boot');if(b){b.classList.add('off');setTimeout(()=>{try{b.remove();}catch(e){}},1100);}selectOvl();});
- document.querySelectorAll('.bnav button').forEach(bt=>bt.addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b)b.classList.add('off');siteOvl(bt.dataset.t);}));
+ document.querySelectorAll('.bnav button').forEach(bt=>bt.addEventListener('click',()=>{ac();primeVoice();const b=$('boot');if(b)b.classList.add('off');bt.dataset.t==='mandate'?mandateOvl(true):siteOvl(bt.dataset.t);}));
  $('aboutB').addEventListener('click',()=>{if(cut||FIN.on)return;ac();siteOvl(curUser()?'account':'product');});
  if(location.hash==='#admin'){const k=prompt('HQ key');if(k===ADMIN_KEY){const b=$('boot');if(b)b.remove();adminOvl();return;}}
  /* GTA boot sequence: black -> presents -> badge pop -> loading card */
@@ -1437,7 +1440,7 @@ function bigMapOvl(){if(ovlOpen||cut||FIN.on||STX.on)return;SFX.click();const sc
  openOvl(`<div class="cine" onclick="HQ.close()" style="cursor:pointer">
   <div class="dim" style="animation-delay:0s">${sc.title[0]} · ${sc.title[1].toUpperCase()}</div>
   <canvas id="bigM"></canvas>
-  <div class="dim" style="animation-delay:.2s">● = NEXT · TAP TO CLOSE</div></div>`);
+  <div class="dim" style="animation-delay:.2s">● = NEXT · TAP A POINT TO GO · TAP OUTSIDE TO CLOSE</div></div>`);
  const c=$('bigM');if(!c)return;const BW=Math.round(Math.min(innerWidth*.92,480)),BH=Math.round(BW*128/188);
  c.width=BW*DPRv;c.height=BH*DPRv;c.style.width=BW+'px';c.style.height=BH+'px';
  const x=c.getContext('2d');x.setTransform(DPRv,0,0,DPRv,0,0);
@@ -1447,8 +1450,15 @@ function bigMapOvl(){if(ovlOpen||cut||FIN.on||STX.on)return;SFX.click();const sc
  x.font='11px ui-monospace,Menlo,monospace';x.textAlign='center';
  for(const it of sc.inter){x.fillStyle='#b7a98c';x.fillRect(ox+it.x*k-2.5,oy+it.y*k-2.5,5,5);x.fillText(it.key.toUpperCase(),ox+it.x*k,oy+it.y*k-9);}
  const tk=objTargetKey();if(tk){const it=sc.inter.find(i=>i.key===tk);if(it){x.strokeStyle='#d99a3d';x.lineWidth=2.5;x.beginPath();x.arc(ox+it.x*k,oy+it.y*k,10,0,TAU);x.stroke();x.fillStyle='#d99a3d';x.beginPath();x.arc(ox+it.x*k,oy+it.y*k,3,0,TAU);x.fill();}}
- x.fillStyle=S.signed?'#6fa36b':'#efe3ce';x.beginPath();x.arc(ox+P.x*k,oy+P.y*k,5.5,0,TAU);x.fill();x.strokeStyle='#14100c';x.lineWidth=1;x.stroke();}
+ x.fillStyle=S.signed?'#6fa36b':'#efe3ce';x.beginPath();x.arc(ox+P.x*k,oy+P.y*k,5.5,0,TAU);x.fill();x.strokeStyle='#14100c';x.lineWidth=1;x.stroke();
+ /* fast travel: tap any labeled point (incl. the amber NEXT ring) -> delivered there */
+ c.style.cursor='pointer';
+ c.addEventListener('click',ev=>{ev.stopPropagation();const r2=c.getBoundingClientRect();const mx=(ev.clientX-r2.left)*BW/r2.width,my=(ev.clientY-r2.top)*BH/r2.height;
+  let best=null,bd=1e9;for(const it of sc.inter){const d=Math.hypot(mx-(ox+it.x*k),my-(oy+it.y*k));if(d<bd){bd=d;best=it;}}
+  if(best&&bd<=30){closeOvl();P.x=best.x;P.y=Math.min(sc.h-20,best.y+40);target=null;pendingAct=null;P.idle=null;SFX.door();toast('Delivered — '+(best.label||best.key).split('—')[0].trim());}
+  else HQ.close();});}
 if(miniX)miniX.addEventListener('click',bigMapOvl);
+mini.addEventListener('click',bigMapOvl); /* desktop: the minimap itself opens the big map (pointer-events gated by CSS) */
 /* iOS keyboards: dvh does not shrink — drive the open sheet from visualViewport */
 if(TOUCH&&window.visualViewport){const vv=window.visualViewport;
  const fitVV=()=>{const p=ovl.querySelector('.paper,.site');if(!p)return;
@@ -1532,12 +1542,12 @@ function render(dt,t){g.fillStyle=C.ink;g.fillRect(0,0,W,H);
  if(!grainPat)grainPat=g.createPattern(grain,'repeat');if(!RM){g.save();g.globalAlpha=.5;g.fillStyle=grainPat;g.translate((T*30)%160,0);g.fillRect(-160,0,W+320,H);g.restore();}
  if(vigCv)g.drawImage(vigCv,0,0);
  drawMini(t);}
-function drawMini(t){if(FIN.on){mg.clearRect(0,0,188,128);return;}const sc=SCN[S.scene];mg.clearRect(0,0,188,128);const k=Math.min(168/sc.w,96/sc.h),ox=(188-sc.w*k)/2,oy=8+(112-sc.h*k)/2;
+function drawMini(t){if(FIN.on){mg.clearRect(0,0,188,128);return;}const sc=SCN[S.scene];mg.clearRect(0,0,188,128);const k=Math.min(168/sc.w,96/sc.h),ox=(188-sc.w*k)/2,oy=8+(112-sc.h*k)/2,F=MINI_R?1.5:1;
  mg.fillStyle='#2a241c';mg.fillRect(ox,oy,sc.w*k,sc.h*k);mg.strokeStyle='#6f675c';mg.strokeRect(ox,oy,sc.w*k,sc.h*k);
  mg.fillStyle='#4a4238';for(const r of sc.cols)mg.fillRect(ox+r.x*k,oy+r.y*k,Math.max(r.w*k,1),Math.max(r.h*k,1));
- for(const it of sc.inter){mg.fillStyle='#b7a98c';mg.fillRect(ox+it.x*k-2,oy+it.y*k-2,4,4);}
- const tk=objTargetKey();if(tk){const it=sc.inter.find(i=>i.key===tk);if(it){const pl=1+Math.sin(t*4)*.25;mg.strokeStyle='#d99a3d';mg.lineWidth=2.5;mg.beginPath();mg.arc(ox+it.x*k,oy+it.y*k,7*pl,0,TAU);mg.stroke();mg.fillStyle='#d99a3d';mg.beginPath();mg.arc(ox+it.x*k,oy+it.y*k,2.5,0,TAU);mg.fill();}}
- mg.fillStyle=S.signed?'#6fa36b':'#efe3ce';mg.beginPath();mg.arc(ox+P.x*k,oy+P.y*k,4.5,0,TAU);mg.fill();mg.lineWidth=1;mg.strokeStyle='#14100c';mg.stroke();
+ for(const it of sc.inter){mg.fillStyle='#b7a98c';mg.fillRect(ox+it.x*k-2*F,oy+it.y*k-2*F,4*F,4*F);}
+ const tk=objTargetKey();if(tk){const it=sc.inter.find(i=>i.key===tk);if(it){const pl=1+Math.sin(t*4)*.25;mg.strokeStyle='#d99a3d';mg.lineWidth=2.5*F;mg.beginPath();mg.arc(ox+it.x*k,oy+it.y*k,7*pl*F,0,TAU);mg.stroke();mg.fillStyle='#d99a3d';mg.beginPath();mg.arc(ox+it.x*k,oy+it.y*k,2.5*F,0,TAU);mg.fill();}}
+ mg.fillStyle=S.signed?'#6fa36b':'#efe3ce';mg.beginPath();mg.arc(ox+P.x*k,oy+P.y*k,4.5*F,0,TAU);mg.fill();mg.lineWidth=1;mg.strokeStyle='#14100c';mg.stroke();
  mg.font=Math.round(12/(MINI_SCALE||1))+'px ui-monospace,Menlo';mg.fillStyle='#b7a98c';mg.textAlign='left';mg.fillText(S.scene.toUpperCase()+' · ● = NEXT',ox+2,oy-3);
  drawMark(mg,170,3,15,'rgba(239,227,206,.85)',1.2);}
 if(TOUCH)$('hint').textContent='TAP TO WALK · TAP THINGS TO USE · ♪ MUTES';
