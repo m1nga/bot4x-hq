@@ -267,7 +267,7 @@ const LEAD_ENDPOINT='';   /* set to a webhook URL on deploy — sendBeacon fires
 const S={scene:'street',name:'',handle:'',email:'',carrying:null,checkedIn:false,metCat:false,gateDone:false,signed:false,music:true,started:false,picked:false,visited:{},stations:{}};
 const P={x:190,y:660,a:Math.PI/2,idle:null,idleT:0,t:0,moving:false};
 let cam={x:0,y:0},camLock=null,cut=false,cutSkip=false,target=null,pendingAct=null;
-let mutT=0,mutN=0,mutMsg=null,nextMut=3,botB=0;
+let mutT=0,mutN=0,mutMsg=null,nextMut=15,botB=0;
 const keys={};
 /* ---------- dom ---------- */
 const cv=document.getElementById('cv'),g=cv.getContext('2d');
@@ -1319,7 +1319,7 @@ function renderFinale(dt,t){
  if(vigCv)g.drawImage(vigCv,0,0);
  if(FIN.phase==='end'){g.fillStyle='rgba(0,0,0,'+Math.min(1,FIN.t/2.4).toFixed(3)+')';g.fillRect(0,0,W,H);}}
 /* ---------- scene switching ---------- */
-function setScene(id,x,y){S.scene=id;calcZoom();P.x=x;P.y=y;P.idleT=0;target=null;pendingAct=null;mutT=0;nextMut=3;mutMsg=null;SFX.door();S.visited[id]=1;const sc=SCN[id];locCard(sc.title[0],sc.title[1]);setObj(objective());
+function setScene(id,x,y){S.scene=id;calcZoom();P.x=x;P.y=y;P.idleT=0;target=null;pendingAct=null;mutT=0;nextMut=15;mutMsg=null;SFX.door();S.visited[id]=1;const sc=SCN[id];locCard(sc.title[0],sc.title[1]);setObj(objective());
  if(id==='roof'&&AC&&!windNode){const b=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate),ch=b.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;const src=AC.createBufferSource();src.buffer=b;src.loop=true;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=420;const ga=AC.createGain();ga.gain.value=.05;src.connect(f);f.connect(ga);ga.connect(master);src.start();windNode={src,ga};}
  if(id!=='roof'&&windNode){windNode.src.stop();windNode=null;}}
 /* ---------- input ---------- */
@@ -1341,7 +1341,7 @@ cv.addEventListener('pointermove',e=>{if(!e.buttons||ovlOpen||cut||FIN.on)return
  const r=cv.getBoundingClientRect();target={x:(e.clientX-r.left)/Z+cam.x,y:(e.clientY-r.top)/Z+cam.y};pendingAct=null;});
 function nearestInter(x,y,rad){let best=null,bd=1e9;for(const it of SCN[S.scene].inter){const d=dist(x,y,it.x,it.y);const lim=rad||Math.max(74,it.r+42);if(d<lim&&d<bd){bd=d;best=it;}}return best;}
 function reachable(){let best=null,bd=1e9;for(const it of SCN[S.scene].inter){const d=dist(P.x,P.y,it.x,it.y);if(d<it.r&&d<bd){bd=d;best=it;}}return best;}
-function runInter(it){if(cut)return;P.idle=null;mutT=0;nextMut=3;mutMsg=null;it.act();setObj(objective());carryTxt();}
+function runInter(it){if(cut)return;P.idle=null;mutT=0;nextMut=15;mutMsg=null;it.act();setObj(objective());carryTxt();}
 function tryInteract(){const it=reachable();if(it)runInter(it);}
 $('prompt').addEventListener('pointerdown',e=>{e.stopPropagation();tryInteract();});
 $('musicB').addEventListener('click',()=>{S.music=!S.music;$('musicB').textContent=S.music?'♪ ON':'♪ OFF';ac();musGain.gain.linearRampToValueAtTime(S.music?.32:0,AC.currentTime+.2);});
@@ -1372,7 +1372,7 @@ function update(dt){const sc=SCN[S.scene];
   if(P.moving&&fmove>0){P._stepA=(P._stepA||0)+fmove;if(P._stepA>34){P._stepA=0;SFX.step(fmove/Math.max(dt,.001)>250);}}
   if(target){if(fmove<0.5){P._stkT=(P._stkT||0)+dt;if(P._stkT>.5){target=null;pendingAct=null;P._stkT=0;}}else P._stkT=0;}else P._stkT=0;
   P._lx=P.x;P._ly=P.y;
-  if(S.started&&!FIN.on){mutT+=dt;if(mutT>nextMut){mutT=0;nextMut=8+Math.random()*6;
+  if(S.started&&!FIN.on){mutT+=dt;if(mutT>nextMut){mutT=0;nextMut=45+Math.random()*30;
    const two=(mutN++%2);const line=two?'uh? built to post right?':'uh? bot4x?';
    mutMsg={t:2,txt:line};vo(two?'mut2':'mut1',PC,two?'uh? built to post right?':'uh? bot four X?',.9);}}
   if(S.scene==='floor'&&!FIN.on){botB+=dt;if(botB>5.5){botB=0;if(Math.random()<.55)SFX.beep();}}
