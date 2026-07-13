@@ -79,6 +79,8 @@
   .site .tabs button{font:11px ui-monospace,Menlo,monospace;letter-spacing:.1em;padding:8px 12px;border:1px solid #2a251f;background:transparent;color:#8f867a;cursor:pointer;border-radius:0;min-height:38px}
   .site .tabs button.on{color:#efe3ce;border-bottom:3px solid #d99a3d;background:#1a1613}
   .site .tabs .xcl{margin-left:auto;min-width:44px;color:#b7a98c;font-size:14px}
+  .rcpt{background:#efe3ce;color:#241c14;font:12px ui-monospace,Menlo,monospace;text-align:left;padding:14px 16px;margin:12px auto 0;max-width:360px;width:calc(100% - 24px);border:1px solid #c9b894;box-shadow:0 6px 24px rgba(0,0,0,.5);line-height:1.75;letter-spacing:.02em}
+  .rcpt b{color:#8a3b2e}
   .site h3{display:inline-block;background:#8a3b2e;color:#efe3ce;padding:7px 20px 6px 16px;transform:skewX(-8deg);border-left:6px solid #d99a3d;font-family:"Pricedown Bl","Arial Narrow",Arial,sans-serif;font-weight:900;font-size:26px;letter-spacing:.02em;margin:0;box-shadow:3px 3px 0 #000}
   .site p{font-size:13.5px;line-height:1.7;color:#c9bda6;margin:8px 0}
   .site .hero{font-family:"Arial Narrow",Arial;font-weight:900;font-size:clamp(22px,4vw,32px);line-height:1.25;color:#efe3ce;letter-spacing:.04em;text-transform:uppercase}
@@ -552,8 +554,15 @@ function ledgerOvl(){openOvl(`<div class="cine">
  <div class="big" style="animation-delay:.4s">RAW.</div>
  <div class="big brass" style="animation-delay:1.2s">REWRITTEN.</div>
  <div class="big" style="animation-delay:2s">RIGHT.</div>
- <div class="mid slog" style="animation-delay:3s">THE EDIT IS THE PRODUCT.</div>
- <button type="button" style="animation-delay:3.6s" onclick="HQ.close()">Keep walking</button></div>`);}
+ <div class="rcpt" style="animation-delay:2.7s">JUL 08 · REWRITTEN — claim had no source. Number cut, take kept.<br>JUL 06 · CLAIM TRIMMED — “3x” became “measurably faster.”<br>JUL 03 · WAITING ON PROOF — held for a source.</div>
+ <div class="mid slog" style="animation-delay:3.5s">THE EDIT IS THE PRODUCT.</div>
+ <div class="dim" style="animation-delay:4.1s">A RECEIPT PROVES ONE CALL. THE LEDGER PROVES THE RECORD.</div>
+ <button type="button" style="animation-delay:4.6s" onclick="HQ.close()">Keep walking</button></div>`);}
+function receiptOvl(){openOvl(`<div class="cine">
+ <div class="big" style="animation-delay:.2s">BOLD ON TAKE.</div>
+ <div class="big brass" style="animation-delay:1s">STRICT ON CLAIM.</div>
+ <div class="rcpt" style="animation-delay:1.9s">RECEIPT #0001 — THE ENGINE · 4F<br>DECISION: <b>PUBLISH — SECOND PASS</b><br>VOICE 8/10 — dialed to yours<br>PROOF — fixed: number sourced<br>VALUE 7/10 — earns the read<br>CONTRACT OK — one post, one point<br>REASON: bold take kept; unbacked number cut.<br>SHA e7a2…4f19 · FILED — THE EDIT ARCHIVE</div>
+ <button type="button" style="animation-delay:2.8s" onclick="HQ.close()">Keep the receipt</button></div>`);}
 function tdOvl(){openOvl(`<div class="cine">
  <div class="dim" style="animation-delay:0s">ONE WEEK. ONE OPERATOR.</div>
  <div class="big" style="animation-delay:.6s">SHIP.</div>
@@ -1116,20 +1125,21 @@ SCN.floor={w:1900,h:1200,title:['4F','The Judgment Floor'],
  inter:[
   {key:'desk',x:950,y:990,r:86,label:'The Mandate Desk — check in',act(){if(!S.checkedIn)checkinOvl();else toast('“You’re checked in, '+S.name+'. The floor is yours.”');}},
   {key:'wire',x:300,y:440,r:80,label:'DEEP — read the industry',act(){if(!S.checkedIn){toast('Check in first — the Mandate Desk.');return;}ac();SFX.print();
-   if(!S.stations.deep)stationOvl('deep','DEEP — THE INDUSTRY READ','WE READ EVERYTHING.','YOU SAY ONE THING.');
-   else toast('WIRE: “leader repriced overnight” — noted. One thing worth saying.');}},
+   if(!S.stations.deep)stationOvl('deep','DEEP — THE INDUSTRY READ','WE READ EVERYTHING. YOU SAY ONE THING.','THE REST WE HOLD.');
+   else{const WEV=['WIRE: “leader repriced overnight” — noted. One thing worth saying.','WIRE: “same take, forty accounts” — read. We hold.','WIRE: “big number, no source” — read. Not under your name.'];toast(WEV[(S._wev=((S._wev||0)+1)%3)]);}}},
   {key:'write',x:1555,y:490,r:80,label:'POST — in your voice',act(){if(!S.checkedIn){toast('Check in first — the Mandate Desk.');return;}ac();
    if(!S.stations.post){let i=0;const iv=setInterval(()=>{SFX.type();if(++i>6)clearInterval(iv);},90);stationOvl('post','POST','ONE POST.','ONE POINT.','POSTED RIGHT.');}
-   else{let i=0;const iv=setInterval(()=>{SFX.type();if(++i>8)clearInterval(iv);},90);toast('Drafted — in '+(S.name||'your')+'’s register.');}}},
+   else{let i=0;const iv=setInterval(()=>{SFX.type();if(++i>8)clearInterval(iv);},90);toast('Drafted in '+(S.name||'your')+'’s register — sent to the Gate.');}}},
   {key:'gate',x:950,y:640,r:96,label:'THE ENGINE — run a live judgment',act(){if(!S.checkedIn){toast('Check in first — the Mandate Desk.');return;}
    if(!S.stations.engine)engineIntro();else gateCut();}},
-  {key:'ledger',x:310,y:1000,r:80,label:'Open the ledger',act:ledgerOvl},
+  {key:'ledger',x:310,y:1000,r:80,label:'The ledger — pull a receipt',act:ledgerOvl},
   {key:'clients',x:130,y:668,r:64,label:'Drawer: CLIENTS',act(){ac();SFX.rattle();toast('Locked. Their judgment history is theirs.');}},
   {key:'td',x:1620,y:1000,r:80,label:'BIP — build in public',act(){if(!S.checkedIn){toast('Check in first — the Mandate Desk.');return;}
    if(!S.stations.bip)stationOvl('bip','BIP — BUILD IN PUBLIC','PROOF OF WORK,','POSTED WHILE YOU BUILD.');else tdOvl();}},
   {key:'plaque',x:1235,y:955,r:70,label:'The first trophy',act(){ac();SFX.click();toast('“FIRST MANDATE — 2026.” Engraved, polished, unclaimed. Could be yours.');}},
   {key:'stairs',x:1838,y:150,r:70,label:'Stairs — roof',act(){if(S.signed)stairFX();else toast('Clients only. Sign first — corner office.');}},
-  {key:'sign',x:1660,y:850,r:84,label:'The desk — sign your mandate',act(){if(!S.checkedIn){toast('Check in first — the Mandate Desk.');return;}if(!S.gateDone)toast('“You can sign now — but watch the Gate work first. It’s why you’re here.”');mandateOvl(false);}},
+  {key:'chair',x:1748,y:902,r:58,label:'The Operator’s chair',act(){ac();SFX.click();toast('One person. Every call signed.');}},
+  {key:'sign',x:1660,y:850,r:84,label:'The desk — sign your mandate',act(){if(!S.checkedIn){toast('Check in first — the Mandate Desk.');return;}if(!S.gateDone&&!S._signHint){S._signHint=1;toast('“You can sign now — but watch the Gate work first. It’s why you’re here.”');return;}mandateOvl(false);}},
  ],
  draw(dt,t){const sc=this;
   g.fillStyle=C.floor;g.fillRect(44,90,1812,1026);
@@ -1151,7 +1161,7 @@ SCN.floor={w:1900,h:1200,title:['4F','The Judgment Floor'],
   g.fillStyle=C.wood;g.fillRect(860,880,180,48);g.fillStyle=C.woodD;g.fillRect(860,922,180,14);g.font=MONO(8);g.fillStyle=C.brass;g.fillText('THE MANDATE DESK',950,906);
   g.fillStyle='#e8e2d4';g.fillRect(920,868,26,10);g.fillStyle='#151311';g.fillRect(978,872,22,8);plantPot(1064,930);
   /* signals bay */
-  for(let i=0;i<4;i++){const sy=150+i*92;g.fillStyle='#10161a';g.fillRect(58,sy,110,70);g.strokeStyle=C.steelD;g.strokeRect(58,sy,110,70);g.strokeStyle='rgba(159,196,212,.5)';g.beginPath();let px=64;g.moveTo(px,sy+38);for(let k=1;k<11;k++){px=64+k*9;g.lineTo(px,sy+38-Math.sin((t*2+i*7+k)*1.1)*13);}g.stroke();g.font=MONO(6.5);g.fillStyle='#5f7683';g.fillText(['MKTS','HN','SPORTS','WIRE'][i],113,sy+62);}
+  for(let i=0;i<4;i++){const sy=150+i*92;g.fillStyle='#10161a';g.fillRect(58,sy,110,70);g.strokeStyle=C.steelD;g.strokeRect(58,sy,110,70);g.strokeStyle='rgba(159,196,212,.5)';g.beginPath();let px=64;g.moveTo(px,sy+38);for(let k=1;k<11;k++){px=64+k*9;g.lineTo(px,sy+38-Math.sin((t*2+i*7+k)*1.1)*13);}g.stroke();g.font=MONO(6.5);g.fillStyle='#5f7683';g.fillText(['MKTS','HN','X','WIRE'][i],113,sy+62);}
   g.fillStyle=C.steel;g.fillRect(250,330,100,50);g.fillStyle=C.steelD;g.fillRect(250,374,100,12);g.fillStyle='#e8e2d4';g.fillRect(270,316,60,18);if(!S.carrying&&S.checkedIn)g.fillRect(286,384,28,14);
   label(300,306,'WIRE PRINTER','#b7a98c',MONO(7));label(112,136,'DEEP DESK','#b7a98c',MONO(8));
   g.fillStyle='#6d5a3a';g.fillRect(210,150,110,120);for(let i=0;i<5;i++){g.fillStyle=['#e8e2d4','#c9a86a','#e8e2d4','#9fc4d4','#e8e2d4'][i];g.fillRect(222+(i%3)*32,166+(i/3|0)*46,24,32);}g.fillStyle=C.red;g.beginPath();g.arc(252,196,2.4,0,TAU);g.arc(286,222,2.4,0,TAU);g.fill();
@@ -1160,10 +1170,10 @@ SCN.floor={w:1900,h:1200,title:['4F','The Judgment Floor'],
   g.fillStyle='rgba(49,66,75,.16)';g.fillRect(1354,236,396,290);
   g.strokeStyle=C.glassL;g.lineWidth=3;g.strokeRect(1350,232,404,300);g.lineWidth=1;
   for(const dx of[1400,1590]){g.fillStyle=C.wood;g.fillRect(dx,300,100,44);g.fillStyle='#151311';g.fillRect(dx+26,288,46,18);g.fillStyle='#e8e2d4';g.fillRect(dx+32,282,34,7);}
-  g.fillStyle=C.wood;g.fillRect(1500,400,110,48);g.fillStyle='#10161a';g.fillRect(1522,384,64,26);g.fillStyle='rgba(255,182,92,.85)';g.fillRect(1526,388,56,19);g.font=MONO(6);g.fillStyle='#241c14';g.fillText('your voice, loading…',1554,399);
+  g.fillStyle=C.wood;g.fillRect(1500,400,110,48);g.fillStyle='#10161a';g.fillRect(1522,384,64,26);g.fillStyle='rgba(255,182,92,.85)';g.fillRect(1526,388,56,19);g.font=MONO(6);g.fillStyle='#241c14';g.fillText('your voice, dialing in…',1554,399);
   g.fillStyle='#e8e2d4';for(let i=0;i<7;i++){g.save();g.translate(1380+i*54,252);g.rotate((i%2?-.06:.06));g.fillRect(0,0,20,26);g.restore();}
   label(1552,222,'POST — THE WRITERS’ ROOM','#b7a98c',MONO(8));
-  g.font=MONO(7);g.fillStyle='#6f675c';g.fillText('“ONE POST, ONE POINT.” · “THE FLEX IS THE CUT.”',1552,548);
+  g.font=MONO(7);g.fillStyle='#6f675c';g.fillText('“ONE POST, ONE POINT.” · “THE FLEX IS THE CUT.” · “DIALED IN, NOT CLONED.”',1552,548);
   /* THE GATE */
   drawBoard(950,362);
   g.fillStyle='#3a4147';g.fillRect(870,470,160,110);g.fillStyle='#2c3237';g.fillRect(870,470,160,16);g.fillStyle='#4a525a';g.fillRect(886,498,128,58);
@@ -1243,16 +1253,16 @@ function gateCut(){if(cut)return;cut=true;cutSkip=false;target=null;const sc=SCN
  if(TOUCH){const sk=$('skipH');if(sk)sk.style.display='block';}
  const steps=[
   [0.35,()=>{sc.chip={t:'THE ENGINE — CODE + LLM + MANDATE',x:950,y:436};}],
-  [0.9,()=>{shot(755,430,ZDESK);sc.flash='VOICE';SFX.thunk();sc.chip={t:'VOICE 8/10 — register: yours',x:755,y:400};}],
+  [0.9,()=>{shot(755,430,ZDESK);sc.flash='VOICE';SFX.thunk();sc.chip={t:'VOICE 8/10 — dialed to yours',x:755,y:400};}],
   [1.7,()=>{shot(1145,430,ZDESK);sc.flash='PROOF';SFX.thunk();sc.chip={t:'PROOF 2/10 — unsourced claim',x:1145,y:400};}],
-  [2.5,()=>{shot(755,690,ZDESK);sc.flash='VALUE';SFX.thunk();sc.chip={t:'VALUE 7/10',x:755,y:716};}],
-  [3.3,()=>{shot(1145,690,ZDESK);sc.flash='CONTRACT';SFX.thunk();sc.chip={t:'CONTRACT ok — one point',x:1145,y:716};}],
+  [2.5,()=>{shot(755,690,ZDESK);sc.flash='VALUE';SFX.thunk();sc.chip={t:'VALUE 7/10 — earns the read',x:755,y:716};}],
+  [3.3,()=>{shot(1145,690,ZDESK);sc.flash='CONTRACT';SFX.thunk();sc.chip={t:'CONTRACT OK — one post, one point',x:1145,y:716};}],
   [4.1,()=>{shot(950,500,ZBOARD);sc.flash=null;sc.chip=null;board.flipTo('REWRITE');toast('“I wouldn’t put the first version under your name.” — the Gate');}],
   [5.0,()=>{let i=0;const iv=setInterval(()=>{SFX.type();if(++i>6)clearInterval(iv);},80);sc.chip={t:'…cutting the unbacked number, keeping the take…',x:950,y:436};}],
   [6.2,()=>{sc.chip=null;board.flipTo('SECOND PASS');}],
   [6.8,()=>{SFX.thunk();}],[7.05,()=>{SFX.thunk();}],[7.3,()=>{SFX.thunk();}],[7.55,()=>{SFX.thunk();}],
-  [8.1,()=>{board.flipTo('PUBLISH');SFX.ding();toast('Bold on take. Strict on claim.',true);}],
-  [8.9,()=>{S.gateDone=true;S.stations.engine=1;S.carrying=null;carryTxt();camLock=null;cut=false;calcZoom();setObj(objective());const sk=$('skipH');if(sk)sk.style.display='none';}]];
+  [8.1,()=>{board.flipTo('PUBLISH');SFX.ding();}],
+  [8.9,()=>{S.gateDone=true;S.stations.engine=1;S.carrying=null;carryTxt();camLock=null;cut=false;calcZoom();setObj(objective());const sk=$('skipH');if(sk)sk.style.display='none';receiptOvl();}]];
  const t0=performance.now();let done=0;
  (function run(){if(cutSkip){cutSkip=false;for(let i=done;i<steps.length;i++)steps[i][1]();done=steps.length;return;}
   const el=(performance.now()-t0)/1000*(RM?2.2:1);while(done<steps.length&&steps[done][0]<=el){steps[done][1]();done++;}
@@ -1448,7 +1458,7 @@ function bigMapOvl(){if(ovlOpen||cut||FIN.on||STX.on)return;SFX.click();const sc
  x.fillStyle='#2a241c';x.fillRect(ox,oy,sc.w*k,sc.h*k);x.strokeStyle='#6f675c';x.lineWidth=1.5;x.strokeRect(ox,oy,sc.w*k,sc.h*k);
  x.fillStyle='#4a4238';for(const r of sc.cols)x.fillRect(ox+r.x*k,oy+r.y*k,Math.max(r.w*k,1),Math.max(r.h*k,1));
  x.font='11px ui-monospace,Menlo,monospace';x.textAlign='center';
- for(const it of sc.inter){x.fillStyle='#b7a98c';x.fillRect(ox+it.x*k-2.5,oy+it.y*k-2.5,5,5);x.fillText(it.key.toUpperCase(),ox+it.x*k,oy+it.y*k-9);}
+ for(const it of sc.inter){x.fillStyle='#b7a98c';x.fillRect(ox+it.x*k-2.5,oy+it.y*k-2.5,5,5);x.fillText(({desk:'DESK',wire:'DEEP',write:'POST',gate:'ENGINE',ledger:'LEDGER',clients:'CLIENTS',td:'BIP',plaque:'TROPHY',stairs:'STAIRS',sign:'SIGN',chair:'CHAIR'}[it.key]||it.key.toUpperCase()),ox+it.x*k,oy+it.y*k-9);}
  const tk=objTargetKey();if(tk){const it=sc.inter.find(i=>i.key===tk);if(it){x.strokeStyle='#d99a3d';x.lineWidth=2.5;x.beginPath();x.arc(ox+it.x*k,oy+it.y*k,10,0,TAU);x.stroke();x.fillStyle='#d99a3d';x.beginPath();x.arc(ox+it.x*k,oy+it.y*k,3,0,TAU);x.fill();}}
  x.fillStyle=S.signed?'#6fa36b':'#efe3ce';x.beginPath();x.arc(ox+P.x*k,oy+P.y*k,5.5,0,TAU);x.fill();x.strokeStyle='#14100c';x.lineWidth=1;x.stroke();
  /* fast travel: tap any labeled point (incl. the amber NEXT ring) -> delivered there */
